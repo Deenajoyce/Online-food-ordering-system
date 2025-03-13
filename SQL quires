@@ -1,0 +1,41 @@
+
+•	Fetch order details
+SQL> SELECT Orders.OrderID, Customers.Name, Menu.ItemName, OrderDetails.Quantity, Orders.OrderDate
+SQL> FROM Orders
+SQL> JOIN Customers ON Orders.CustomerID = Customers.CustomerID
+SQL> JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
+SQL> JOIN Menu ON OrderDetails.MenuID = Menu.MenuID
+SQL> WHERE Orders.OrderStatus = 'Pending';
+
+•	Track pending deliveries:
+SQL> SELECT OrderID, OrderDate, CustomerID 
+SQL> FROM Orders
+SQL> WHERE OrderStatus = 'Pending';
+
+•	Analyze sales trends:
+SQL> SELECT Menu.ItemName, SUM (OrderDetails.Quantity) AS TotalSold
+SQL> FROM OrderDetails
+SQL> JOIN Menu ON OrderDetails.MenuID = Menu.MenuID
+SQL> GROUP BY Menu.ItemName
+SQL> ORDER BY TotalSold DESC;
+
+• Stored Procedure for Total Order Amount:
+
+DELIMITER //
+SQL>CREATE PROCEDURE CalculateTotal (IN order_id INT, OUT total_amount DECIMAL (10,2))
+BEGIN
+SQL>SELECT SUM (Menu.Price * OrderDetails.Quantity) + SUM (Menu.Price * OrderDetails.Quantity * 0.05) - SUM (discount)
+SQL>INTO total_amount
+SQL>FROM OrderDetails
+SQL>JOIN Menu ON OrderDetails.MenuID = Menu.MenuID
+SQL>WHERE OrderDetails.OrderID = order_id;
+END //
+SQL>CREATE PROCEDURE CalculateTotal (IN order_id INT, OUT total_amount DECIMAL (10,2))
+SQL>BEGIN
+SQL>SELECT SUM (Menu.Price * OrderDetails.Quantity) + SUM (Menu.Price * OrderDetails.Quantity * 0.05) - SUM (discount)
+SQL>INTO total_amount
+SQL>FROM OrderDetails
+SQL>JOIN Menu ON OrderDetails.MenuID = Menu.MenuID
+SQL>WHERE OrderDetails.OrderID = order_id;
+SQL>END //
+SQL>DELIMITER;
